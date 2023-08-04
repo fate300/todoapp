@@ -44,3 +44,6 @@ app.post('/add',function(요청,응답){
     console.log(요청.body.date);
     //DB에 저장해주세요. 
 });
+
+//REST 원칙 6개 1.Uniform interface 2.Client-Server 역할구분 3.Stateless(요청1과 요청2는 의존성이 없어야함)
+//4.Cacheable(서버에서 보내주는 정보들을 캐싱이 가능해야함) 5.Layered System 6.Code on Demand 
