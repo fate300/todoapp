@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient; 
+app.set('view engine', 'ejs');
 
 var db;
 
@@ -67,24 +68,23 @@ app.get('/write',function(요청, 응답){
 
 app.post('/add',function(요청,응답){
     
-    MongoClient.connect('mongodb+srv://fate300000:JEy33783808@cluster0.mqbkngy.mongodb.net/?retryWrites=true&w=majority', function(에러, client){
-    if(에러)return console.log(에러)
-
-    db = client.db('todoapp');
+    응답.send('전송완료')
+    console.log(요청.body.title);
+    console.log(요청.body.date);
+    //DB에 저장해주세요. 
     db.collection('post').insertOne({할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
 
         console.log('저장완료');
 
     });
 
-}) 
+}); 
 
-    응답.send('전송완료')
-    console.log(요청.body.title);
-    console.log(요청.body.date);
-    //DB에 저장해주세요. 
+
+//list에 get 요청으로 접속사면 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTML을 보여줌
+app.get('/list', function(요청,응답){
+    응답.render('list.ejs')
 });
-
 
 
 
