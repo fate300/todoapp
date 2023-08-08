@@ -11,11 +11,11 @@ MongoClient.connect('mongodb+srv://fate300000:JEy33783808@cluster0.mqbkngy.mongo
     if(에러)return console.log(에러)
 
     db = client.db('todoapp');
-    db.collection('post').insertOne({이름:'John', 나이:20}, function(에러,결과){
+    // db.collection('post').insertOne({이름:'John', 나이:20}, function(에러,결과){
 
-        console.log('저장완료');
+    //     console.log('저장완료');
 
-    });
+    // });
     // db.collection('post').insertOne('저장할데이터', function(에러,결과){
 
     //     console.log('저장완료');
@@ -82,8 +82,15 @@ app.post('/add',function(요청,응답){
 
 
 //list에 get 요청으로 접속사면 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTML을 보여줌
+//디비에 저장된 post라는 collection안의 제목이 모든 데이터를 꺼내주세요. 
+
 app.get('/list', function(요청,응답){
-    응답.render('list.ejs')
+    db.collection('post').find().toArray(function(에러,결과){
+        console.log(결과);
+        응답.render('list.ejs',{posts:결과});
+    });
+
+    
 });
 
 
