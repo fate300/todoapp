@@ -72,11 +72,17 @@ app.post('/add',function(요청,응답){
     console.log(요청.body.title);
     console.log(요청.body.date);
     //DB에 저장해주세요. 
-    db.collection('post').insertOne({할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
-
-        console.log('저장완료');
-
+    //총게시물 갯수 -> auto increment
+    db.collection('counter').findOne({name:'게시물갯수'},function(에러,결과){
+        console.log(결과.totalPost)
+        var 총게시물갯수=결과.totalPost;
+        db.collection('post').insertOne({_id:총게시물갯수+1 , 할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
+         console.log('저장완료');
+    
+        });
+//counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가 시켜야함;         
     });
+    
 
 }); 
 
