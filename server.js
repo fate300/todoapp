@@ -68,19 +68,26 @@ app.get('/write',function(요청, 응답){
 
 app.post('/add',function(요청,응답){
     
-    응답.send('전송완료')
-    console.log(요청.body.title);
-    console.log(요청.body.date);
+    응답.send('전송완료');
+    // console.log(요청.body.title);
+    // console.log(요청.body.date);
     //DB에 저장해주세요. 
     //총게시물 갯수 -> auto increment
     db.collection('counter').findOne({name:'게시물갯수'},function(에러,결과){
-        console.log(결과.totalPost)
+        // console.log(결과.totalPost);
         var 총게시물갯수=결과.totalPost;
         db.collection('post').insertOne({_id:총게시물갯수+1 , 할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
          console.log('저장완료');
-    
+    //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가 시켜야함;         
+    //db.collection('counter')(db중에 counter를 찾아서).updateOne({name:'게시물갯수'(이런걸 찾아서)},{$inc:{totalPost:1}}(이렇게 설정함)
+    //{$set:{totalPost:바꿀 값}}, {$inc:{totalPost:기존에 더해줄 값}}
+        db.collection('counter').updateOne({name:'게시물갯수'},{$inc:{totalPost:1}},function(에러,결과){
+
+            if(에러){return console.log(에러)}
+
+        })
+
         });
-//counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가 시켜야함;         
     });
     
 
