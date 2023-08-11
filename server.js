@@ -75,6 +75,9 @@ app.post('/add',function(요청,응답){
     //총게시물 갯수 -> auto increment
     db.collection('counter').findOne({name:'게시물갯수'},function(에러,결과){
         // console.log(결과.totalPost);
+        if(!결과) {
+            return console.log("게시물갯수 문서가 존재하지 않습니다.");
+        }
         var 총게시물갯수=결과.totalPost;
         db.collection('post').insertOne({_id:총게시물갯수+1 , 할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
          console.log('저장완료');
@@ -105,6 +108,17 @@ app.get('/list', function(요청,응답){
 
     
 });
+
+app.delete('/delete',function(요청,응답){
+
+console.log(요청.body)
+
+//요청.body에 담긴 게시물 번호에 따라 DB에서 게시물 삭제
+
+})
+
+
+
 
 
 
