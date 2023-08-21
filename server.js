@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient; 
 app.set('view engine', 'ejs');
+app.use('public',express.static('public'));
+
 
 var db;
 
@@ -124,16 +126,19 @@ db.collection('post').deleteOne(요청.body,function(에러,결과){
 })
 })
 
-// gpt가 짠거
-// app.delete('/delete',function(요청,응답){
-//     console.log(요청.body)
-//     요청.body._id = parseInt(요청.body._id);
-//     db.collection('post').deleteOne(요청.body,function(에러,결과){
-//       console.log('삭제완료');
-//       // Send a response to the client
-//       응답.status(200).send('삭제완료');
-//     })
-//   })
+
+//detail로 접속하면 detail.ejs 보여줌 
+//'/detail/:id'이런식으로 하면 페이지를 계속 만들어낼 필요는 없음 
+
+
+app.get('/detail/:id',function(요청,응답){
+    db.collection('post').findOne({_id: parseInt(요청.params.id)},function(에러,결과){
+        console.log(결과);
+        응답.render('detail.ejs',{ data : 결과});
+    })
+})
+
+
 
 
 
