@@ -9,21 +9,21 @@
 </head>
 <body>
   
-  <!-- (여긴 다른 페이지에 있던 <nav></nav> 태그 전부) -->
+  <%- include('nav.html') %> 
 
-  <h4 class="container mt-4"><strong>Todo App</strong></h4>
+  <h4 class="container mt-4"><strong>Todo App Edit</strong></h4>
 
   <div class="container mt-3">
-    <form action="/add" method="POST">
+    <form action="/add?_method=PUT" method="POST">
 <!-- 반드시 서버랑 통신할때 위 두가지를 해야함 action과 method -->
 
       <div class="form-group">
         <label>오늘의 할일</label>
-        <input type="text" class="form-control" name="title">
+        <input value="<%= post.할일 %>" type="text" class="form-control" name="title">
       </div>
       <div class="form-group">
         <label>날짜</label>
-        <input type="text" class="form-control" name="date">
+        <input value="<%= post.날짜 %>" type="text" class="form-control" name="date">
       </div>
       <button type="submit" class="btn btn-outline-secondary">Submit</button>
     </form>
