@@ -42,13 +42,22 @@ app.get('/',function(요청,응답){
 
 
 app.get('/edit/:id',function(요청,응답){
-    db.collection('post').findOne({_id:parseInt(요청.params.id)}, function(에러,결과){
+    db.collection('post').findOne({_id: parseInt(요청.params.id)}, function(에러,결과){
         console.log(결과)
         응답.render('edit.ejs',{post:결과})
     })
    
 })
 
+
+app.put('/edit', function(요청,응답){
+//폼에 담긴 할일데이터, 날짜데이터를 가지고 db.collection 에다가 업데이트함 
+db.collection('post').updateOne({_id : parseInt(요청.body.id)},{$set:{할일:요청.body.title, 날짜:요청.body.date}},function(에러,결과){
+    console.log('수정완료')
+    응답.redirect('/list')
+})
+
+});
 
 
 
@@ -113,8 +122,6 @@ app.post('/add',function(요청,응답){
 
         });
     });
-    
-
 }); 
 
 
@@ -126,9 +133,53 @@ app.get('/list', function(요청,응답){
         console.log(결과);
         응답.render('list.ejs',{posts:결과});
     });
-
-    
 });
+
+const passport = require('passport');
+const LocalStrategy = require('passport-local').Strategy;
+const session = require ('express-session');
+
+
+app.use(session({secret:'비밀코드', resave: true, saveUninitialized: false}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+app.get('/login',function(요청,응답){
+    응답.render('login.ejs')
+
+});
+
+app.post('/login',passs.authenticate('local',{
+    failureRediret:'/fail'
+
+}), function(요청,응답){
+ 응답.redirect('/')
+});
+
+
+passport.use(new LocalStrategy({
+    usernameField: 'id',
+    passwordField: 'pw',
+    session: true,
+    passReqToCallback: false,
+  }, function (입력한아이디, 입력한비번, done) {
+    //console.log(입력한아이디, 입력한비번);
+    db.collection('login').findOne({ id: 입력한아이디 }, function (에러, 결과) {
+      if (에러) return done(에러)
+  
+      if (!결과) return done(null, false, { message: '존재하지않는 아이디요' })
+      if (입력한비번 == 결과.pw) {
+        return done(null, 결과)
+      } else {
+        return done(null, false, { message: '비번틀렸어요' })
+      }
+    })
+  }));
+
+
+
+
 
 
 app.delete('/delete',function(요청,응답){
