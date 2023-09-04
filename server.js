@@ -131,6 +131,18 @@ app.get('/list', function(요청,응답){
     });
 });
 
+
+app.get('/search', (요청,응답)=>{
+console.log(요청.query.value);
+db.collection('post').find({할일:요청.query.value}).toArray((에러,결과)=>{
+console.log(결과)
+응답.render('searchresult.ejs',{posts:결과});
+})
+})
+
+
+
+
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require ('express-session');
