@@ -133,8 +133,23 @@ app.get('/list', function(요청,응답){
 
 
 app.get('/search', (요청,응답)=>{
-console.log(요청.query.value);
-db.collection('post').find({할일:요청.query.value}).toArray((에러,결과)=>{
+    var 검색조건 = [
+        {
+          $search: {
+            index: 'titleSearch',
+            text: {
+              query: 요청.query.value,
+              path: '할일'  // 제목날짜 둘다 찾고 싶으면 ['제목', '날짜']
+            }
+          }
+        },
+        //id로 정렬하기 
+        {$sort: {_id:1 }},
+        //5개 까지만 가져오기 
+        {$limit:5}
+    ] 
+    console.log(요청.query.value);
+db.collection('post').aggregate(검색조건).toArray((에러,결과)=>{
 console.log(결과)
 응답.render('search.ejs',{posts:결과});
 })
