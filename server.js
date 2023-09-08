@@ -92,33 +92,6 @@ app.get('/beauty',function(요청, 응답){
 //요청에 입력받은 내용 저장됨
 //꺼내서 쓰려면 body.parser라는 library가 필요함  
 
-app.post('/add',function(요청,응답){
-    
-    응답.send('전송완료');
-    // console.log(요청.body.title);
-    // console.log(요청.body.date);
-    //DB에 저장해주세요. 
-    //총게시물 갯수 -> auto increment
-    db.collection('counter').findOne({name:'게시물갯수'},function(에러,결과){
-        // console.log(결과.totalPost);
-        if(!결과) {
-            return console.log("게시물갯수 문서가 존재하지 않습니다.");
-        }
-        var 총게시물갯수=결과.totalPost;
-        db.collection('post').insertOne({_id:총게시물갯수+1 , 할일:요청.body.title, 날짜:요청.body.date}, function(에러,결과){
-         console.log('저장완료');
-    //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가 시켜야함;         
-    //db.collection('counter')(db중에 counter를 찾아서).updateOne({name:'게시물갯수'(이런걸 찾아서)},{$inc:{totalPost:1}}(이렇게 설정함)
-    //{$set:{totalPost:바꿀 값}}, {$inc:{totalPost:기존에 더해줄 값}}
-        db.collection('counter').updateOne({name:'게시물갯수'},{$inc:{totalPost:1}},function(에러,결과){
-
-            if(에러){return console.log(에러)}
-
-        })
-
-        });
-    });
-}); 
 
 
 //list에 get 요청으로 접속사면 실제 DB에 저장된 데이터들로 예쁘게 꾸며진 HTML을 보여줌
@@ -223,23 +196,69 @@ passport.deserializeUser(function(아이디,done){
     })
 });
 
+app.post('/register',function(요청,응답){
+
+db.collection('login').insertOne({id:요청.body.id, pw:요청.body.pw},function(에러,결과){
+
+응답.redirect('/')
+
+})
+
+})
+
+app.post('/add',function(요청,응답){
+   
 
 
+    응답.send('전송완료');
+    // console.log(요청.body.title);
+    // console.log(요청.body.date);
+    //DB에 저장해주세요. 
+    //총게시물 갯수 -> auto increment
+    db.collection('counter').findOne({name:'게시물갯수'},function(에러,결과){
+        // console.log(결과.totalPost);
+        if(!결과) {
+            return console.log("게시물갯수 문서가 존재하지 않습니다.");
+        }
+        var 총게시물갯수=결과.totalPost;
+        var 저장할거 = {_id:총게시물갯수+1 , 할일:요청.body.title, 날짜:요청.body.date, 작성자: 요청.user._id}
+
+
+        db.collection('post').insertOne(저장할거, function(에러,결과){
+         console.log('저장완료');
+    //counter라는 콜렉션에 있는 totalPost라는 항목도 1 증가 시켜야함;         
+    //db.collection('counter')(db중에 counter를 찾아서).updateOne({name:'게시물갯수'(이런걸 찾아서)},{$inc:{totalPost:1}}(이렇게 설정함)
+    //{$set:{totalPost:바꿀 값}}, {$inc:{totalPost:기존에 더해줄 값}}
+        db.collection('counter').updateOne({name:'게시물갯수'},{$inc:{totalPost:1}},function(에러,결과){
+
+            if(에러){return console.log(에러)}
+
+        })
+
+        });
+    });
+}); 
 
 
 app.delete('/delete',function(요청,응답){
 
-console.log(요청.body);
+    console.log(요청.body);
+    
+    요청.body._id = parseInt(요청.body._id);
+    //요청.body에 담긴 게시물 번호에 따라 DB에서 게시물 삭제
+    
+    var 삭제할데이터 = {_id:요청.body._id,작성자: 요청.user._id}
+    
+    db.collection('post').deleteOne(삭제할데이터,function(에러,결과){
+    
+        console.log('삭제완료');
+    
+        if(결과){console.log(결과)}
 
-요청.body._id = parseInt(요청.body._id);
-//요청.body에 담긴 게시물 번호에 따라 DB에서 게시물 삭제
-db.collection('post').deleteOne(요청.body,function(에러,결과){
-
-    console.log('삭제완료');
-    응답.status(200).send({message:'성공했습니다'});
-
-})
-})
+        응답.status(200).send({message:'성공했습니다'});
+    
+    })
+    })
 
 
 //detail로 접속하면 detail.ejs 보여줌 
