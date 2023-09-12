@@ -147,6 +147,38 @@ console.log(요청.user);
 
 });
 
+
+let multer = require ('multer');
+var storage = multer.diskStorage({
+    destination: function(req, file, cb){
+        cb(null, './public/image')
+    },
+    filename: function(req, file, cb){
+        cb(null, file.originalname)
+    }
+})
+
+var upload = multer({storage:storage });
+
+
+app.get('/upload',function(요청,응답){
+    응답.render('upload.ejs')
+})
+
+app.post('/upload', upload.single('profile'), function(요청,응답){
+
+    응답.send('업로드완료')
+} );
+
+app.get('/image/:imageName', function(요청,응답){
+ 응답.sendFile(__dirname+'/public/image'+ 요청.params.imageName)
+
+})
+
+
+
+
+
 function 로그인했니(요청,응답,next){
 
 if(요청.user){
@@ -155,6 +187,7 @@ if(요청.user){
 응답.send('로그인 안하셨는데요?')
 }
 }
+
 
 
 
