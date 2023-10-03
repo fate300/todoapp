@@ -6,9 +6,10 @@ const MongoClient = require('mongodb').MongoClient;
 app.set('view engine', 'ejs');
 app.use('/public',express.static('public'));
 const methodOverride = require('method-override')
+const{ ObjectId } = require('mongodb');
 app.use(methodOverride('_method'))
 
-var db;
+ var db;
 
 MongoClient.connect('mongodb+srv://fate300000:JEy33783808@cluster0.mqbkngy.mongodb.net/?retryWrites=true&w=majority', function(에러, client){
     if(에러)return console.log(에러)
@@ -230,6 +231,35 @@ db.collection('login').insertOne({id:요청.body.id, pw:요청.body.pw},function
 })
 
 })
+
+
+
+app.post('/chatroom', function(요청, 응답){
+    // // 값의 존재 여부 확인 gpt가 만들어 준 것 
+    if (!요청.body.당한사람id || 요청.body.당한사람id.length !== 24) {
+        return 응답.status(400).send("Invalid ID format");
+    }
+
+    var 저장할거 = {
+      title : '무슨무슨채팅방',
+      member : [ObjectId(요청.body.당한사람id), 요청.user._id],
+      date : new Date()
+    }
+
+    db.collection('chatroom').insertOne(저장할거).then((결과)=>{
+      응답.send('성공')
+    });
+});
+
+
+app.get('/chat',로그인했니,function(요청,응답){
+db.collection('chatroom').find( {member : 요청.user._id}).toArray().then((결과)=>{
+  응답.render('chat.ejs', {data:결과})
+})
+});
+
+
+
 
 app.post('/add',function(요청,응답){
    
