@@ -258,7 +258,24 @@ db.collection('chatroom').find( {member : 요청.user._id}).toArray().then((결�
 })
 });
 
+app.post('/message',로그인했니,function(요청,응답){
+   
+   var 저장할거 ={
+    parent:요청.body.parent ,
+    content:요청.body.content ,
+    userid: 요청.user._id,
+    date: new Date(),
+   }
+   
 
+    db.collection('message').insertOne(저장할거).then(()=>{
+        console.log('DB저장성공');
+        응답.send('DB저장성공')
+    }).catch(()=>{
+        console.log('DB저장실패')
+    })
+    });
+    
 
 
 app.post('/add',function(요청,응답){
