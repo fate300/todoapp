@@ -35,11 +35,15 @@
 
 
 var 지금누른채팅방id;
+var eventSource;
 
 $('.list-group-item').click(function(){
     지금누른채팅방id= this.dataset.id; 
-
-})
+     eventSource = new EventSource('/message');
+     eventSource.addEventListener('test',function(e){
+      console.log(JSON.parse(e.data));
+     }); 
+});
 
 $('#send').click(function(){
 var 채팅내용 = $('#chat-input').val();
@@ -49,9 +53,9 @@ var 보낼거 = {
 }
 $.post('/message',보낼거).then(()=>{
   console.log('전송성공')
-})
+});
 
-})
+});
 
 
 
