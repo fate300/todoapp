@@ -289,6 +289,20 @@ db.collection('message').find({parent:요청.params.id}).toArray().then((결과)
 응답.write('event:test\n');
 응답.write('data:'+JSON.stringify(결과)+'\n\n');
 })
+const 찾을문서 = [
+    { $match: { 'fullDocument.parent':요청.params.id } }
+];
+  
+const changeStream = db.collection('message').watch(찾을문서);
+
+changeStream.on('change', (result) => {
+    응답.write('event:test\n');
+    응답.write('data:'+JSON.stringify([result.fullDocument])+'\n\n');
+});
+
+
+
+
 });
 
 
