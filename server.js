@@ -1,5 +1,10 @@
 const express = require ('express');
 const app = express();
+
+const http = require('http').createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(http);
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({extended : true}));
 const MongoClient = require('mongodb').MongoClient; 
@@ -14,6 +19,7 @@ MongoClient.connect('mongodb+srv://fate300000:JEy33783808@cluster0.mqbkngy.mongo
     if(에러)return console.log(에러)
 
     db = client.db('todoapp');
+    app.db = db;
     // db.collection('post').insertOne({이름:'John', 나이:20}, function(에러,결과){
 
     //     console.log('저장완료');
@@ -25,12 +31,24 @@ MongoClient.connect('mongodb+srv://fate300000:JEy33783808@cluster0.mqbkngy.mongo
 
     // });
 
-    app.listen(8080,function(){
+    http.listen(8080,function(){
         console.log('listening on 8080')        
     });
     
 }) 
 
+app.get('/socket',function(요청,응답){
+    응답.render('socket.ejs')
+})
+
+io.on('connection',function(socket){
+    console.log('유저접속됨')
+
+    socket.on('user-send',function(data){
+        console.log(data);
+    })
+
+})
 
 app.get('/write',function(요청,응답){
     응답.render('write.ejs')
